@@ -1,0 +1,181 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>Troškovi</h4>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                    Novi trošak
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Opis</th>
+                                <th>Iznos</th>
+                                <th>Kategorija</th>
+                                <th>Datum</th>
+                                <th>Akcije</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in expenses %}
+                                <tr>
+                                    <td>{{ expense.id }}</td>
+                                    <td>{{ expense.description }}</td>
+                                    <td>{{ "%.2f"|format(expense.amount) }} kn</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ expense.category.name }}</span>
+                                    </td>
+                                    <td>{{ expense.date.strftime('%d.%m.%Y') }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-warning" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editExpenseModal{{ expense.id }}">
+                                            Uredi
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteExpenseModal{{ expense.id }}">
+                                            Izbriši
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Edit Modal -->
+                                <div class="modal fade" id="editExpenseModal{{ expense.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Uredi trošak</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="/expenses/edit/{{ expense.id }}" method="post">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="amount" class="form-label">Iznos</label>
+                                                        <input type="number" class="form-control" id="amount" name="amount" value="{{ expense.amount }}" step="0.01" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="description" class="form-label">Opis</label>
+                                                        <input type="text" class="form-control" id="description" name="description" value="{{ expense.description }}" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="category_id" class="form-label">Kategorija</label>
+                                                        <select class="form-select" id="category_id" name="category_id" required>
+                                                            {% for category in categories %}
+                                                                <option value="{{ category.id }}" {% if category.id == expense.category.id %}selected{% endif %}>
+                                                                    {{ category.name }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="date" class="form-label">Datum</label>
+                                                        <input type="date" class="form-control" id="date{{ expense.id }}" name="date" required>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                                                    <button type="submit" class="btn btn-primary">Spremi</button>
+                                                </div>
+                                            </form>
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    // Postavi datum u input polju
+                                                    const date = new Date('{{ expense.date }}');
+                                                    const formattedDate = date.toISOString().substring(0, 10);
+                                                    document.getElementById('date{{ expense.id }}').value = formattedDate;
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteExpenseModal{{ expense.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Izbriši trošak</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Jeste li sigurni da želite izbrisati trošak <strong>{{ expense.description }}</strong> od <strong>{{ "%.2f"|format(expense.amount) }} kn</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Odustani</button>
+                                                <form action="/expenses/delete/{{ expense.id }}" method="post">
+                                                    <button type="submit" class="btn btn-danger">Izbriši</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">Nema dostupnih troškova</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Expense Modal -->
+<div class="modal fade" id="addExpenseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Novi trošak</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/expenses/add" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Iznos</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Opis</label>
+                        <input type="text" class="form-control" id="description" name="description" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label">Kategorija</label>
+                        <select class="form-select" id="category_id" name="category_id" required>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Datum</label>
+                        <input type="date" class="form-control" id="addExpenseDate" name="date" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                    <button type="submit" class="btn btn-primary">Dodaj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Postavi današnji datum u modal za dodavanje troška
+        const today = new Date();
+        const formattedDate = today.toISOString().substring(0, 10);
+        document.getElementById('addExpenseDate').value = formattedDate;
+    });
+</script>
+{% endblock %}

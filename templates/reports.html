@@ -1,0 +1,174 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Izvještaji o troškovima</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Ukupni troškovi</h5>
+                                <p class="display-4">{{ "%.2f"|format(total_expenses) }} kn</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Troškovi po kategorijama</h5>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Kategorija</th>
+                                            <th>Ukupno</th>
+                                            <th>Postotak</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in category_totals %}
+                                            <tr>
+                                                <td>{{ item.category }}</td>
+                                                <td>{{ "%.2f"|format(item.total) }} kn</td>
+                                                <td>
+                                                    {% if total_expenses > 0 %}
+                                                        {{ "%.1f"|format(item.total / total_expenses * 100) }}%
+                                                    {% else %}
+                                                        0%
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3" class="text-center">Nema dostupnih podataka</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Raspodjela troškova po kategorijama</div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height:300px;">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Usporedba kategorija</div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height:300px;">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dohvati podatke za grafove
+        fetch('/api/chart-data')
+            .then(response => response.json())
+            .then(data => {
+                createPieChart(data);
+                createBarChart(data);
+            });
+    });
+    
+    function createPieChart(data) {
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        
+        // Izvuci podatke za graf
+        const labels = data.map(item => item.name);
+        const values = data.map(item => item.value);
+        
+        // Kreiraj graf
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#4e73df',
+                        '#1cc88a',
+                        '#36b9cc',
+                        '#f6c23e',
+                        '#e74a3b',
+                        '#858796'
+                    ],
+                    hoverBackgroundColor: [
+                        '#2e59d9',
+                        '#17a673',
+                        '#2c9faf',
+                        '#dda20a',
+                        '#be2617',
+                        '#6e707e'
+                    ],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+    
+    function createBarChart(data) {
+        const ctx = document.getElementById('barChart').getContext('2d');
+        
+        // Izvuci podatke za graf
+        const labels = data.map(item => item.name);
+        const values = data.map(item => item.value);
+        
+        // Kreiraj graf
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Iznos (kn)',
+                    data: values,
+                    backgroundColor: '#4e73df',
+                    borderColor: '#4e73df',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
