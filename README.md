@@ -100,7 +100,7 @@ Aplikacija dolazi s unaprijed definiranim kategorijama prilagođenim hrvatskom I
 
 - **💊 Zdravstveno osiguranje** - HZZO doprinosi (118.67 EUR/mj)
 - **👴 Mirovinsko osiguranje** - MIO I. stup (107.88 EUR/mj), MIO II. stup (35.96 EUR/mj)
-- **💰 Paušalni porez** - Mjesečni paušalni porez (719.20 EUR/mj)
+- **💰 Paušalni porez** - Mjesečni paušalni porez (59.99 EUR/mj)
 - **📜 Licence** - Softverske licence i pretplate
 - **🏢 Najam** - Uredski prostor, hosting, cloud servisi
 - **📢 Marketing** - Reklame, web stranica, branding
