@@ -13,7 +13,7 @@
                         <div class="card mb-3">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Ukupni troškovi</h5>
-                                <p class="display-4">{{ "%.2f"|format(total_expenses) }} kn</p>
+                                <p class="display-4">{{ "%.2f"|format(total_expenses) }} EUR</p>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                                         {% for item in category_totals %}
                                             <tr>
                                                 <td>{{ item.category }}</td>
-                                                <td>{{ "%.2f"|format(item.total) }} kn</td>
+                                                <td>{{ "%.2f"|format(item.total) }} EUR</td>
                                                 <td>
                                                     {% if total_expenses > 0 %}
                                                         {{ "%.1f"|format(item.total / total_expenses * 100) }}%
@@ -79,7 +79,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>     
+       
     </div>
 </div>
 {% endblock %}
@@ -87,7 +88,7 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Dohvati podatke za grafove
+        
         fetch('/api/chart-data')
             .then(response => response.json())
             .then(data => {
@@ -99,11 +100,11 @@
     function createPieChart(data) {
         const ctx = document.getElementById('pieChart').getContext('2d');
         
-        // Izvuci podatke za graf
+        
         const labels = data.map(item => item.name);
         const values = data.map(item => item.value);
         
-        // Kreiraj graf
+        
         new Chart(ctx, {
             type: 'pie',
             data: {
@@ -143,21 +144,49 @@
     function createBarChart(data) {
         const ctx = document.getElementById('barChart').getContext('2d');
         
-        // Izvuci podatke za graf
         const labels = data.map(item => item.name);
         const values = data.map(item => item.value);
         
-        // Kreiraj graf
         new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Iznos (kn)',
+                    label: 'Iznos (EUR)',
                     data: values,
                     backgroundColor: '#4e73df',
                     borderColor: '#4e73df',
                     borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function createLineChart(data) {
+        const ctx = document.getElementById('lineChart').getContext('2d');
+        
+        const labels = data.map(item => item.date);
+        const values = data.map(item => item.value);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Troškovi kroz vrijeme',
+                    data: values,
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    borderColor: '#4e73df',
+                    borderWidth: 2,
+                    fill: true
                 }]
             },
             options: {
