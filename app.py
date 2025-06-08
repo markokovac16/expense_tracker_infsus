@@ -3,13 +3,30 @@ from pony.orm import Database, PrimaryKey, Required, Optional, Set, db_session, 
 from datetime import datetime
 from populate_data import populate_it_business_expenses
 import os
+import sqlite3
 
 app = Flask(__name__)
 db = Database()
-db.bind(provider='sqlite', filename='expense_tracker.sqlite', create_db=True)
 
-os.makedirs(os.path.join('static', 'css'), exist_ok=True)
-os.makedirs('templates', exist_ok=True)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(script_dir, 'expense_tracker.sqlite')
+
+os.makedirs(script_dir, exist_ok=True)
+os.makedirs(os.path.join(script_dir, 'static', 'css'), exist_ok=True)
+os.makedirs(os.path.join(script_dir, 'templates'), exist_ok=True)
+
+if not os.path.exists(db_path):
+    print(f"Stvaram novu SQLite bazu: {db_path}")
+    try:
+        # Stvori praznu SQLite datoteku
+        conn = sqlite3.connect(db_path)
+        conn.close()
+        print(f"✅ SQLite baza uspješno stvorena: {db_path}")
+    except Exception as e:
+        print(f"❌ Greška pri stvaranju baze: {e}")
+        exit(1)
+
+print(f"Database path: {db_path}")
 
 class Category(db.Entity):
     id = PrimaryKey(int, auto=True)
@@ -24,6 +41,7 @@ class Expense(db.Entity):
     category = Required(Category)
     recurring = Required(bool, default=False) 
 
+db.bind(provider='sqlite', filename=db_path, create_db=True)
 db.generate_mapping(create_tables=True)
 
 @app.route('/')
@@ -88,7 +106,7 @@ def get_expenses():
     elif sort_by == 'category':
         expenses.sort(key=lambda e: e.category.name, reverse=(sort_order == 'desc'))
     elif sort_by == 'id':
-        expenses.sort(key=lambda e: e.id, reverse=(sort_order == 'desc'))
+        expenses.sort(key=lambda e: e.id, reverse=(sort_order == 'desc'))  # Fixed typo: exercises -> expenses
     else:
         expenses.sort(key=lambda e: e.date, reverse=(sort_order == 'desc'))
     

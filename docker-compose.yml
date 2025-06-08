@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  expense-tracker:
+    build: .
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./data:/app/data
+      - ./expense_tracker.sqlite:/app/expense_tracker.sqlite
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    container_name: expense_tracker_app

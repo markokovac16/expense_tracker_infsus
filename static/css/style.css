@@ -1,11 +1,7 @@
-/* Custom styles for Expense Tracker app */
-
-/* Body & main content */
 body {
     background-color: #f8f9fc;
 }
 
-/* Card styling */
 .card {
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     border: none;
@@ -19,7 +15,6 @@ body {
     padding: 0.75rem 1.25rem;
 }
 
-/* Table styling */
 .table-responsive {
     overflow-x: auto;
 }
@@ -28,23 +23,19 @@ body {
     margin-bottom: 0;
 }
 
-/* Chart container */
 .chart-container {
     margin: 0 auto;
 }
 
-/* Navigation */
 .navbar {
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
 }
 
-/* Badges */
 .badge {
     font-size: 0.85em;
     padding: 0.35em 0.65em;
 }
 
-/* Footer */
 footer {
     position: fixed;
     bottom: 0;
@@ -52,7 +43,6 @@ footer {
     box-shadow: 0 -0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
 }
 
-/* Custom styles for the dashboard */
 .display-4 {
     font-weight: 600;
     color: #4e73df;
