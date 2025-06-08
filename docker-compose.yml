@@ -6,10 +6,12 @@ services:
     ports:
       - "5001:5001"
     volumes:
-      - ./data:/app/data
-      - ./expense_tracker.sqlite:/app/expense_tracker.sqlite
+      - expense_data:/app/data
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
     container_name: expense_tracker_app
+
+volumes:
+  expense_data:

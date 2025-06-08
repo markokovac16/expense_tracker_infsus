@@ -11,20 +11,38 @@ db = Database()
 script_dir = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(script_dir, 'expense_tracker.sqlite')
 
-os.makedirs(script_dir, exist_ok=True)
+parent_dir = os.path.dirname(db_path)
+if parent_dir and not os.path.exists(parent_dir):
+    os.makedirs(parent_dir, exist_ok=True)
+
 os.makedirs(os.path.join(script_dir, 'static', 'css'), exist_ok=True)
 os.makedirs(os.path.join(script_dir, 'templates'), exist_ok=True)
 
 if not os.path.exists(db_path):
     print(f"Stvaram novu SQLite bazu: {db_path}")
     try:
+        
+        if os.path.isdir(db_path):
+            print(f"❌ GREŠKA: {db_path} je direktorij, ne datoteka!")
+            import shutil
+            shutil.rmtree(db_path)
+            print(f"✅ Uklonjen direktorij: {db_path}")
+        
         # Stvori praznu SQLite datoteku
         conn = sqlite3.connect(db_path)
         conn.close()
-        print(f"✅ SQLite baza uspješno stvorena: {db_path}")
+        
+        
+        if os.path.isfile(db_path):
+            print(f"✅ SQLite baza uspješno stvorena: {db_path}")
+        else:
+            raise Exception("Datoteka nije stvorena")
+            
     except Exception as e:
         print(f"❌ Greška pri stvaranju baze: {e}")
         exit(1)
+else:
+    print(f"✅ SQLite baza već postoji: {db_path}")
 
 print(f"Database path: {db_path}")
 
