@@ -1,4 +1,4 @@
-# Expense Tracker - IT Paušalni Obrt
+# Expense Tracker
 
 Moderna web aplikacija za praćenje troškova izrađena pomoću Flask frameworka, prilagođena potrebama IT paušalnog obrta u Hrvatskoj. Aplikacija omogućuje kompletno upravljanje troškovima s naprednim funkcionalnostima za analizu i vizualizaciju podataka.
 
@@ -12,6 +12,10 @@ Moderna web aplikacija za praćenje troškova izrađena pomoću Flask frameworka
 - 🔍 **Napredni filtri** - sortiranje po datumu, iznosu, kategoriji ili ID-u
 - 📱 **Responzivni dizajn** - optimizirano za desktop i mobilne uređaje
 - 🐳 **Docker podrška** - jednostavno pokretanje i deployment
+
+## Use-case dijagram
+![Alt text](/use-case.png)
+
 
 ## 🛠️ Tehnologije
 
